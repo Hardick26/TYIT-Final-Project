@@ -34,7 +34,7 @@ class RoleController extends Controller
     {
         //
         Role::create($request->all());
-        return back()->with('success', 'Role crated successfully');
+        return back()->with('success', 'Role created successfully');
     }
 
     /**

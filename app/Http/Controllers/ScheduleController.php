@@ -24,10 +24,10 @@ class ScheduleController extends Controller
      */
     public function create()
     {
-        //
-       
-        return view('admin.schedule.create' );
+        $schedule = new Schedule(); // If applicable, create a new empty instance
+        return view('admin.schedule.create', compact('schedule'));
     }
+
 
     /**
      * Store a newly created resource in storage.

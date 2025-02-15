@@ -22,10 +22,10 @@ class DesignationController extends Controller
      * Show the form for creating a new resource.
      */
     public function create()
-    {
-        //
-        return view('admin.designation.create');
-    }
+ {
+    $designation = new Designation(); // Create an empty designation object
+    return view('admin.designation.create', compact('designation'));
+}
 
     /**
      * Store a newly created resource in storage.

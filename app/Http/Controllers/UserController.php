@@ -40,7 +40,7 @@ class UserController extends Controller
     //         $employee->salary()->save($salary);
     //      }
         User::create($request->all());
-        return back()->with('success', 'user crated successfully');
+        return back()->with('success', 'User created successfully');
     }
 
     /**
@@ -87,6 +87,6 @@ class UserController extends Controller
     {
         //
         $user->delete();
-        return back()->with('success', 'user deleted successfully');
+        return back()->with('success', 'User deleted successfully');
     }
 }

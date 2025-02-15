@@ -12,9 +12,9 @@
   <section class="row">
     <div class="col-12 d-flex align-items-center justify-content-center">
       <div class="col-6">
-        <form action="{{ Auth::user()->role->slug === 'super-admin' ? route('desgination.store') : (Auth::user()->role->slug === 'administrator' ? route('admin.desgination.store') : route('hr.desgination.store') ) }}" method="post">
+      <form action="{{ Auth::user()->role->slug === 'super-admin' ? route('designation.store') : (Auth::user()->role->slug === 'administrator' ? route('admin.designation.store') : route('hr.designation.store') ) }}" method="post">
           @csrf
-          <div class="card flex-fill">
+          <div class="card flex-fill">  
             <div class="card-header">
               <h5 class="card-title mb-0">{{ __('Create New Desgination') }}</h5>
             </div>
@@ -41,7 +41,7 @@
             <div class="card-footer">
               <div class="row g-3">
                 <div class="col-6 d-grid">
-                  <a href="{{ Auth::user()->role->slug === 'super-admin' ? route('designation.index', $designation->id) : (Auth::user()->role->slug === 'administrator' ? route('admin.designation.index', $designation->id) : route('hr.designation.index', $designation->id) ) }}" class="btn btn-outline-secondary">
+                <a href="{{ Auth::user()->role->slug === 'super-admin' ? route('designation.index') : (Auth::user()->role->slug === 'administrator' ? route('admin.designation.index') : route('hr.designation.index') ) }}">
                     <i class="fas fa-arrow-left"></i>
                     <span class="ps-1">{{ __('Discard') }}</span>
                   </a>

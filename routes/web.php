@@ -81,18 +81,18 @@ Route::middleware('admin')->prefix('admin')->group( function () {
         Route::put('/{id}', [DepartmentController::class, 'update'])->name('admin.department.update');
         Route::delete('/{id}', [DepartmentController::class, 'destroy'])->name('admin.department.destroy');
     });
-    Route::prefix('designation')->group(function() {
+    Route::prefix('designation')->group(function () {
         Route::get('/', [DesignationController::class, 'index'])->name('admin.designation.index');
         Route::get('/create', [DesignationController::class, 'create'])->name('admin.designation.create');
-        Route::post('/', [DesignationController::class, 'create'])->name('admin.designation.store');
+        Route::post('/', [DesignationController::class, 'store'])->name('admin.designation.store'); // FIXED THIS LINE
         Route::get('/{id}/edit', [DesignationController::class, 'edit'])->name('admin.designation.edit');
         Route::put('/{id}', [DesignationController::class, 'update'])->name('admin.designation.update');
         Route::delete('/{id}', [DesignationController::class, 'destroy'])->name('admin.designation.destroy');
-    });
+    });    
     Route::prefix('employee')->group(function() {
         Route::get('/', [EmployeeController::class, 'index'])->name('admin.employee.index');
         Route::get('/create', [EmployeeController::class, 'create'])->name('admin.employee.create');
-        Route::post('/', [EmployeeController::class, 'create'])->name('admin.employee.store');
+        Route::post('/store', [DesignationController::class, 'store'])->name('designation.store');
         Route::get('/{id}/edit', [EmployeeController::class, 'edit'])->name('admin.employee.edit');
         Route::put('/{id}', [EmployeeController::class, 'update'])->name('admin.employee.update');
         Route::delete('/{id}', [EmployeeController::class, 'destroy'])->name('admin.employee.destroy');
@@ -205,7 +205,7 @@ Route::middleware('payroll')->prefix('manager')->group( function () {
 
 Route::get('/dashboard', function () {
     return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+})->middleware(['auth'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

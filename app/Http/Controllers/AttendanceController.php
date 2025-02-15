@@ -36,7 +36,7 @@ class AttendanceController extends Controller {
     {
         //
         Attendance::create($request->all());
-        return back()->with('success', 'user crated successfully');
+        return back()->with('success', 'user created successfully');
        
     }
 
