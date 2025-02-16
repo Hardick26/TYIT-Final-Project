@@ -27,7 +27,7 @@
                         <div class="card-body">
                             <div class="mb-3">
                                 <label class="form-label fw-bold">Role Name:</label>
-                                <p>{{ $role->name }}</p>
+                                <p>{{ $role->title }}</p>
                             </div>
 
                             <div class="mb-3">

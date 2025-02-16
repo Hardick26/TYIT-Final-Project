@@ -1,79 +1,104 @@
-@extends('layouts.admin')
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>EPTS - Manage Roles</title>
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/light.css') }}" rel="stylesheet">
+</head>
+<body>
+    <div class="wrapper">
+        @include('partials.sidebar')
 
-@section('title')
-  {{ __('Manage Roles') }}
-@endsection
+        <div class="main">
+            @include('partials.navbar')
 
-@section('header')
-  <div class="d-flex align-items-center justify-content-between mb-4">
-    <h1 class="h3">{{ __('Manage Roles') }}</h1>
-    <a href="{{ Auth::user()->role->slug === 'super-admin' ? route('roles.create') : '#' }}" class="btn btn-primary">
-      <i class="fas fa-plus"></i>
-      <span class="ps-1">{{ __('Add new') }}</span>
-    </a>
-  </div>
-@endsection
+            <main class="content">
+                <div class="container-fluid p-0">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h1 class="h3">Manage Roles</h1>
+                        <a href="{{ route('admin.roles.create') }}" class="btn btn-primary">
+                            Add new
+                        </a>
+                    </div>
 
-@section('content')
-  <section class="row">
-    <div class="col-12">
-      <div class="card flex-fill">
-        <div class="card-header">              
-          <h5 class="card-title mb-0">{{ __('Roles DataTable') }}</h5>
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div class="d-flex align-items-center">
+                                    Show 
+                                    <select class="form-select mx-2" style="width: auto;">
+                                        <option value="10">10</option>
+                                        <option value="25">25</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                    </select>
+                                    entries
+                                </div>
+                                <div class="search-box">
+                                    <input type="text" class="form-control" placeholder="Search...">
+                                </div>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>SL</th>
+                                            <th>Role Title</th>
+                                            <th>Role Slug</th>
+                                            <th>Status</th>
+                                            <th>Date Created</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($roles as $index => $role)
+                                        <tr>
+                                            <td>{{ $index + 1 }}</td>
+                                            <td>{{ $role->title }}</td>
+                                            <td>{{ $role->slug }}</td>
+                                            <td>
+                                                <span class="badge bg-success">Enable</span>
+                                            </td>
+                                            <td>{{ $role->created_at->diffForHumans() }}</td>
+                                            <td>
+                                                <div class="d-flex">
+                                                    <a href="{{ route('admin.roles.edit', $role->id) }}" class="btn btn-sm" style="background-color: #17a2b8; color: white; margin-right: 5px;">
+                                                        <i class="align-middle" data-feather="edit-2"></i>
+                                                    </a>
+                                                    <a href="{{ route('admin.roles.show', $role->id) }}" class="btn btn-sm" style="background-color: #28a745; color: white; margin-right: 5px;">
+                                                        <i class="align-middle" data-feather="eye"></i>
+                                                    </a>
+                                                    <form action="{{ route('admin.roles.destroy', $role->id) }}" method="POST" class="d-inline">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="btn btn-sm" style="background-color: #dc3545; color: white;" onclick="return confirm('Are you sure you want to delete this role?')">
+                                                            <i class="align-middle" data-feather="trash-2"></i>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            @include('partials.footer')
         </div>
-        <table class="table table-hover my-0 data-table">
-          <thead>
-            <tr>
-              <th class="d-none d-xl-table-cell">{{ __('SL') }}</th>
-              <th>{{ __('Role Title') }}</th>
-              <th class="d-none d-xl-table-cell">{{ __('Role Slug') }}</th>
-              <th>{{ __('Status') }}</th>
-              <th class="d-none d-md-table-cell">{{ __('Date Created') }}</th>
-              <th>{{ __('Action') }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            @forelse ($roles as $k => $role)
-              <tr>
-                <td class="d-none d-xl-table-cell">{{ $k + 1 }}</td>
-                <td>
-                  <strong>{{ $role->title }}</strong>
-                </td>
-                <td class="d-none d-xl-table-cell">{{ $role->slug }}</td>
-                <td>
-                  @if ($role->status === 1)
-                    <span class="badge bg-success">Enable</span>
-                  @elseif ($role->status === 0)
-                    <span class="badge bg-danger">Disable</span>
-                  @else
-                    <span class="badge bg-secondary">Pending</span>
-                  @endif
-                </td>
-                <td class="d-none d-md-table-cell">{{ $role->created_at->diffforhumans() }}</td>
-                <td width="90px">
-                <form action="{{ Auth::user()->role->slug === 'super-admin' ? route('roles.edit', $role->id) : '#' }}" method="post">
-                @csrf
-                @method("delete")
-
-                 <a href="{{ Auth::user()->role->slug === 'super-admin' ? route('roles.destroy', $role->id) : '#' }}" class="btn btn-outline-primary btn-sm">
-                  <i class="fas fa-edit"></i>
-                  </a>
-              </form>
-              </td>
-              </tr>
-            @empty
-            <tr>
-              <td colspan="6" class="text-center">
-                {{ __('No data found') }}
-              </td>
-            </tr>
-            @endforelse
-          </tbody>
-        </table>
-      </div>
     </div>
-  </section>
-@endsection
 
-@section('script')
-@endsection
+    <script src="{{ asset('js/app.js') }}"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            feather.replace();
+        });
+    </script>
+</body>
+</html>
