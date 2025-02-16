@@ -1,7 +1,7 @@
 <aside id="sidebar" class="sidebar js-sidebar">
   <div class="sidebar-content js-simplebar">
     <a class="sidebar-brand" href="index.html">
-      <span class="align-middle">HRMS</span>
+      <span class="align-middle">EPTS</span>
     </a>
 
     <ul class="sidebar-nav">
@@ -29,10 +29,29 @@
       @if (Auth::check() && (Auth::user()->role->slug === 'super-admin'))
        <li class="sidebar-item">
           <a class="sidebar-link" href="{{ route('roles.index') }}">
-            <i class="fas fa-user-shield align-middle"></i> <span class="align-middle">{{ __('User Settings') }}</span>
+            <i class="fas fa-user-shield align-middle"></i> <span class="align-middle">{{ __('Manage Roles') }}</span>
           </a>
         </li> 
       @endif
+      
+      @if(Auth::check() && (Auth::user()->role->slug === 'super-admin' || Auth::user()->role->slug === 'administrator' || Auth::user()->role->slug === 'moderator'))
+        <li class="sidebar-header">{{ __('Task Management') }}</li>
+      
+        <li class="sidebar-item">
+        <a class="sidebar-link" href="{{ Auth::user()->role->slug === 'super-admin' ? route('tasks.index') : (Auth::user()->role->slug === 'administrator' ? route('admin.tasks.index') : route('moderator.tasks.index') ) }}">
+          <i class="fa-solid fa-list-check"></i>
+          <span class="align-middle">{{ __('Manage Tasks') }}</span>
+        </a>
+        </li>
+      
+        <li class="sidebar-item">
+        <a class="sidebar-link" href="{{ Auth::user()->role->slug === 'super-admin' ? route('tasks.create') : (Auth::user()->role->slug === 'administrator' ? route('admin.tasks.create') : route('moderator.tasks.create') ) }}">
+          <i class="fa-solid fa-plus"></i>
+          <span class="align-middle">{{ __('Create Task') }}</span>
+        </a>
+        </li>
+      @endif
+
         
       @if (Auth::check() && (Auth::user()->role->slug === 'super-admin' || Auth::user()->role->slug === 'administrator' || Auth::user()->role->slug === 'hr-manager'))
         <li class="sidebar-header">{{ __('Employee Management') }}</li>
