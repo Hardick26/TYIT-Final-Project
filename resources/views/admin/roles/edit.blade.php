@@ -1,69 +1,80 @@
-@extends('layouts.admin')
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>EPTS - Edit Role</title>
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/light.css') }}" rel="stylesheet">
+</head>
+<body>
+    <div class="wrapper">
+        @include('partials.sidebar')
 
-@section('title')
-    {{ __('Edit Role') }}
-@endsection
+        <div class="main">
+            @include('partials.navbar')
 
-@section('header')
-  <h1 class="h3 mb-3">Update Roles</h1>
-@endsection
+            <main class="content">
+                <div class="container-fluid p-0">
+                    <div class="mb-3">
+                        <h1 class="h3 d-inline align-middle">Edit Role</h1>
+                        <a href="{{ route('admin.roles.index') }}" class="btn btn-primary float-end">
+                            Back to Roles
+                        </a>
+                    </div>
 
-@section('content')
-  <section class="row">
-    <div class="col-12 d-flex align-items-center justify-content-center">
-      <div class="col-6">
-        <form action="{{ Auth::user()->role->slug === 'super-admin' ? route('role.update', $role->id) }}" method="post">
-          @csrf
-          @method('put')
-          <div class="card flex-fill">
-            <div class="card-header">
-              <h5 class="card-title mb-0">{{ __('Update Existing Role') }}</h5>
-            </div>
-            <div class="card-body py-0">
-              <div class="row g-3">
-                <div class="col-12">
-                  <input type="text" name="title" class="form-control" id="title" placeholder="{{ __('Role Title') }}" value="{{ $role->title }}" required />
+                    <div class="card">
+                        <div class="card-body">
+                            <form action="{{ route('admin.roles.update', $role->id) }}" method="POST">
+                                @csrf
+                                @method('PUT')
+
+                                <div class="mb-3">
+                                    <label for="name" class="form-label">Role Name</label>
+                                    <input type="text" class="form-control @error('name') is-invalid @enderror" 
+                                           id="name" name="name" value="{{ old('name', $role->name) }}" required>
+                                    @error('name')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="slug" class="form-label">Role Slug</label>
+                                    <input type="text" class="form-control @error('slug') is-invalid @enderror" 
+                                           id="slug" name="slug" value="{{ old('slug', $role->slug) }}" required>
+                                    @error('slug')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="status" class="form-label">Status</label>
+                                    <select class="form-select @error('status') is-invalid @enderror" 
+                                            id="status" name="status">
+                                        <option value="1" {{ $role->status ? 'selected' : '' }}>Enable</option>
+                                        <option value="0" {{ !$role->status ? 'selected' : '' }}>Disable</option>
+                                    </select>
+                                    @error('status')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <button type="submit" class="btn btn-primary">Update Role</button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-12">
-                  <textarea name="description" class="form-control" id="description" cols="30" rows="10" placeholder="{{ __('Type details here ...') }}">{{ $role->description }}</textarea>
-                </div>
-                <div class="col-12">
-                  <input type="text" name="slug" class="form-control" id="slug" placeholder="{{ __('Role Slug') }}" value="{{ $role->slug }}" />
-                </div>
-                <div class="col-12">
-                  <select name="status" class="form-control" id="status">
-                    <option value="">{{ __('-- Choose Status --') }}</option>
-                    <option value="1" {{ $role->status == 1 ? 'selected' : '' }} >{{ __('Enable') }}</option>
-                    <option value="0" {{ $role->status == 0 ? 'selected' : '' }} >{{ __('Disable') }}</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-            <div class="card-footer">
-              <div class="row">
-                <div class="col-6 d-grid">
-                  <a href="{{ Auth::user()->role->slug === 'super-admin' ? route('roles.index', $role->id)  }}" class="btn btn-outline-secondary" >
-                    <i class="align-middle me-1" data-feather="arrow-left"></i>
-                    <span class="ps-1">{{ __('Discard') }}</span>
-                  </a>
-                </div>
-                <div class="col-6 d-grid">
-                  <button type="submit" class="btn btn-outline-secondary" >
-                    <i class="align-middle me-1" data-feather="check"></i>
-                    <span class="ps-1">{{ __('Update') }}</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </form>
-      </div>
+            </main>
+
+            @include('partials.footer')
+        </div>
     </div>
-    {{-- <div class="col-5">
-      @include('partials.error')
-    </div> --}}
-  </section>
-@endsection
 
-@section('script')
-@endsection
+    <script src="{{ asset('js/app.js') }}"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            feather.replace();
+        });
+    </script>
+</body>
+</html>
