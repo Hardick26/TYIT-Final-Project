@@ -25,16 +25,22 @@
           @csrf
           <div class="mb-3">
             <label class="form-label">{{ __('Email') }}</label>
-            <input class="form-control form-control-lg" type="email" name="email" placeholder="Enter your email" />
+            <input class="form-control form-control-lg @error('email') is-invalid @enderror" type="email" name="email" placeholder="Enter your email" value="{{ old('email') }}" required autofocus />
+            @error('email')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
           </div>
           <div class="mb-3">
             <label class="form-label">{{ __('Password') }}</label>
-            <input class="form-control form-control-lg" type="password" name="password" placeholder="Enter your password" />
+            <input class="form-control form-control-lg @error('password') is-invalid @enderror" type="password" name="password" placeholder="Enter your password" required />
+            @error('password')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
           </div>
           <div class="row g-3">
             <div class="col">
               <label class="form-check">
-                <input class="form-check-input" type="checkbox" value="remember-me" name="remember-me" checked>
+                <input class="form-check-input" type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}>
                 <span class="form-check-label">{{__('Remember me')}}</span>
               </label>
             </div>

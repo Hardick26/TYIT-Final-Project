@@ -1,16 +1,12 @@
 @extends('layouts.admin')
 
 @section('title')
-    {{ __('Manage attendance') }}
+    {{ __('Daily Attendance') }}
 @endsection
 
 @section('header')
   <div class="d-flex align-items-center justify-content-between mb-4">
-    <h1 class="h3">{{ __('Daily attendance') }}</h1>
-    {{-- <a href="{{ Auth::user()->role->slug === 'super-admin' ? route('attendance.create') : (Auth::user()->role->slug === 'administrator' ? route('admin.attendance.create') : route('moderator.attendance.create') ) }}" class="btn btn-primary">
-      <i class="fas fa-plus"></i>
-      <span class="ps-1">{{ __('Add new') }}</span>
-    </a> --}}
+    <h1 class="h3">{{ __('Attendance Management') }}</h1>
   </div>
 @endsection
 
@@ -19,159 +15,127 @@
   <div class="col-12">
     <div class="card flex-fill">
       <div class="card-header">              
-        <h5 class="card-title mb-0">{{ __('Attendace of the Month August') }}</h5>
+        <h5 class="card-title mb-0">{{ __('Monthly Attendance Sheet - ') }} {{ now()->format('F Y') }}</h5>
       </div>
       <div class="table-responsive">
-        <table class="table table-hover my-0 table-bordered">
-       
-          <thead>
-            <tr>
-  
-                <th scope="col" width="10%">Employee Name</th>
-                
-                <th scope="col">Employee Position</th>
-                <th scope="col">Employee ID</th>
+        <form action="{{ Auth::user()->role->slug === 'super-admin' ? route('check.store') : (Auth::user()->role->slug === 'administrator' ? route('admin.check.store') : route('moderator.check.store') ) }}" method="post">
+          @csrf
+          <button type="submit" class="btn btn-success m-3">
+            <i class="fas fa-save"></i> Save Attendance
+          </button>
+          
+          <table class="table table-hover table-bordered">
+            <thead class="table-light">
+              <tr>
+                <th scope="col" class="align-middle">Employee Name</th>
+                <th scope="col" class="align-middle">Position</th>
+                <th scope="col" class="align-middle">ID</th>
                 @php
-                    $today = today();
+                    $today = now();
                     $dates = [];
-                    
-                    for ($i = 1; $i < $today->daysInMonth + 1; ++$i) {
-                        // $dates[] = \Carbon\Carbon::createFromDate($today->year, $today->month, $i)->format('Y-m-d');
+                    for ($i = 1; $i <= $today->daysInMonth; ++$i) {
                         $dates[] = $i;
                     }
-                    
                 @endphp
                 @foreach ($dates as $date)
-                    <th scope="col">
+                    @php
+                        $currentDate = \Carbon\Carbon::createFromDate($today->year, $today->month, $date);
+                        $dayName = $currentDate->format('D');
+                        $isSunday = $currentDate->isSunday();
+                    @endphp
+                    <th scope="col" class="text-center align-middle {{ $isSunday ? 'bg-light' : '' }}" style="min-width: 80px;">
                         {{ $date }}
+                        <div class="small {{ $isSunday ? 'text-danger' : 'text-muted' }}">{{ $dayName }}</div>
                     </th>
-  
                 @endforeach
+              </tr>
+            </thead>
+            <tbody>
+              @foreach ($employees as $employee)
+                <input type="hidden" name="employee_id" value="{{ $employee->id }}">
+                <tr>
+                  <td class="align-middle">
+                    <strong>{{ $employee->firstname }} {{ $employee->lastname }}</strong>
+                  </td>
+                  <td class="align-middle">{{ $employee->designation->title }}</td>
+                  <td class="align-middle">{{ $employee->id }}</td>
 
-                
-  
-            </tr>
-        </thead>
-  
-        <tbody>
-  
-  
-            <form action="{{ Auth::user()->role->slug === 'super-admin' ? route('check.store') : (Auth::user()->role->slug === 'administrator' ? route('admin.check.store') : route('moderator.check.store') ) }}" method="post">
-               
-                <button type="submit" class="btn btn-success" style="display: flex; margin:10px">submit</button>
-                @csrf
-                @foreach ($employees as $employee)
-  
-                    <input type="hidden" name="employee_id" value="{{ $employee->id }}">
-  
-                    <tr>
-                        <td class="py-0">{{ $employee->firstname }} {{ $employee->lastname }}</td>
-                        <td>{{ $employee->designation->title }}</td>
-                        <td>{{ $employee->id }}</td>
-  
-  
-  
-  
-  
-  
-                        @for ($i = 1; $i < $today->daysInMonth + 1; ++$i)
-  
-  
-                            @php
-                                
-                                $date_picker = \Carbon\Carbon::createFromDate($today->year, $today->month, $i)->format('Y-m-d');
-
-                                $isFriday = \Carbon\Carbon::createFromDate($today->year, $today->month, $i)->isFriday();
-                                
-                                $check_attd = \App\Models\Attendance::query()
-                                    ->where('employee_id', $employee->id)
-                                    ->where('attendance_date', $date_picker)
-                                    // ->where('status', $date_picker)
-                                    ->first();
-                                
-                                $check_depart = \App\Models\Depart::query()
-                                    ->where('employee_id', $employee->id)
-                                    ->where('depart_date', $date_picker)
-                                    // ->where('status', $date_picker)
-                                    ->first();
-                                
-                            @endphp
-                            <td class="@if ($isFriday) bg-light @endif">
-  
-                                {{-- <div class="form-check form-check-inline">
-                                    <input class="form-check-input checkbox" id="check_box"
-                                        name="attd[{{ $date_picker }}][{{ $employee->id }}]" type="checkbox"
-                                        @if (isset($check_attd))  checked @endif id="inlineCheckbox1" value="1">
-  
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input " id="check_box"
-                                        name="depart[{{ $date_picker }}][{{ $employee->id }}]]" type="checkbox"
-                                        @if (isset($check_depart))  checked @endif id="inlineCheckbox2" value="1">
-  
-                                </div> --}}
-
-                                {{-- <div class="form-check form-check-inline">
-                                    <input class="form-check-input checkbox" id="check_box"
-                                        name="attd[{{ $date_picker }}][{{ $employee->id }}]" type="checkbox"
-                                       @if (isset($check_attd)) checked @endif id="inlineCheckbox1" >
-                                       
-  
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input checkbox" id="check_box"
-                                        name="depart[{{ $date_picker }}][{{ $employee->id }}]]" type="checkbox"
-                                       @if (isset($check_depart)) checked @endif id="inlineCheckbox2" >
-  
-                                </div> --}}
-
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input checkbox" id="check_box_attd_{{ $i }}"
-                                        name="attd[{{ $date_picker }}][{{ $employee->id }}]" type="checkbox"
-                                        @if (isset($check_attd)) checked @endif >
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input checkbox" id="check_box_depart_{{ $i }}"
-                                        name="depart[{{ $date_picker }}][{{ $employee->id }}]" type="checkbox"
-                                        @if (isset($check_depart)) checked @endif >
-                                </div>
-  
-                            </td>
-  
-                        @endfor
+                  @for ($i = 1; $i <= $today->daysInMonth; ++$i)
+                    @php
+                        $date_picker = \Carbon\Carbon::createFromDate($today->year, $today->month, $i)->format('Y-m-d');
+                        $isSunday = \Carbon\Carbon::createFromDate($today->year, $today->month, $i)->isSunday();
                         
-                    </tr>
-                @endforeach
-  
-            </form>
-  
-  
-        </tbody>
-  
-        </table>
+                        $check_attd = \App\Models\Attendance::query()
+                            ->where('employee_id', $employee->id)
+                            ->where('attendance_date', $date_picker)
+                            ->first();
+                        
+                        $check_depart = \App\Models\Depart::query()
+                            ->where('employee_id', $employee->id)
+                            ->where('depart_date', $date_picker)
+                            ->first();
+                    @endphp
+                    <td class="text-center @if ($isSunday) bg-light @endif">
+                      <div class="attendance-checkboxes">
+                        <div class="form-check">
+                          <input class="form-check-input" 
+                                type="checkbox" 
+                                id="check_box_attd_{{ $employee->id }}_{{ $i }}"
+                                name="attd[{{ $date_picker }}][{{ $employee->id }}]"
+                                @if (isset($check_attd)) checked @endif
+                                @if ($isSunday) disabled @endif>
+                          <label class="form-check-label small" for="check_box_attd_{{ $employee->id }}_{{ $i }}">
+                            Present
+                          </label>
+                        </div>
+                        <div class="form-check">
+                          <input class="form-check-input" 
+                                type="checkbox" 
+                                id="check_box_depart_{{ $employee->id }}_{{ $i }}"
+                                name="depart[{{ $date_picker }}][{{ $employee->id }}]"
+                                @if (isset($check_depart)) checked @endif
+                                @if ($isSunday) disabled @endif>
+                          <label class="form-check-label small" for="check_box_depart_{{ $employee->id }}_{{ $i }}">
+                            Absent
+                          </label>
+                        </div>
+                      </div>
+                    </td>
+                  @endfor
+                </tr>
+              @endforeach
+            </tbody>
+          </table>
+        </form>
       </div>
-      
     </div>
   </div>
 </section>
 @endsection
 
-@section('script')
-{{-- <input type="checkbox" name="status" id="statusCheckbox">
-<label for="statusCheckbox">Status</label> --}}
-
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    // const checkbox = document.getElementById("statusCheckbox");
-    const checkbox = document.querySelector(".checkbox");
-    checkbox.addEventListener("change", function() {
-        if (checkbox.checked) {
-            checkbox.value = "1"; // Checked, value is 1
-        } else {
-            checkbox.value = "0"; // Unchecked, value is 0
-        }
-    });
-});
-</script>
-
-@endsection
+@push('styles')
+<style>
+.attendance-checkboxes {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.form-check {
+    margin: 0;
+    padding: 0;
+    min-height: auto;
+}
+.form-check-input {
+    margin: 0 4px;
+}
+.form-check-label {
+    color: #666;
+}
+th {
+    white-space: nowrap;
+}
+.text-danger {
+    color: #dc3545 !important;
+}
+</style>
+@endpush

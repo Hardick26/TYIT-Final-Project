@@ -78,19 +78,50 @@
                                             </td>
                                             <td>
                                                 <div class="d-flex">
-                                                    <a href="{{ route('tasks.edit', $task->id) }}" class="btn btn-sm" style="background-color: #17a2b8; color: white; margin-right: 5px;">
-                                                        <i class="align-middle" data-feather="edit-2"></i>
-                                                    </a>
                                                     <a href="{{ route('tasks.show', $task->id) }}" class="btn btn-sm" style="background-color: #28a745; color: white; margin-right: 5px;">
                                                         <i class="align-middle" data-feather="eye"></i>
                                                     </a>
+                                                    <a href="{{ route('tasks.edit', $task->id) }}" class="btn btn-sm" style="background-color: #17a2b8; color: white; margin-right: 5px;">
+                                                        <i class="align-middle" data-feather="edit-2"></i>
+                                                    </a>
+                                                    @if($task->status !== 'completed')
+                                                        <button type="button" class="btn btn-sm" style="background-color: #007bff; color: white; margin-right: 5px;" 
+                                                                data-bs-toggle="modal" data-bs-target="#completeTask{{ $task->id }}">
+                                                            <i class="align-middle" data-feather="check"></i>
+                                                        </button>
+                                                    @endif
                                                     <form action="{{ route('tasks.destroy', $task->id) }}" method="POST" class="d-inline">
                                                         @csrf
                                                         @method('DELETE')
-                                                        <button type="submit" class="btn btn-sm" style="background-color: #dc3545; color: white;" onclick="return confirm('Are you sure you want to delete this task?')">
+                                                        <button type="submit" class="btn btn-sm" style="background-color: #dc3545; color: white;" onclick="return confirm('Are you sure?')">
                                                             <i class="align-middle" data-feather="trash-2"></i>
                                                         </button>
                                                     </form>
+                                                </div>
+
+                                                <!-- Complete Task Modal -->
+                                                <div class="modal fade" id="completeTask{{ $task->id }}" tabindex="-1">
+                                                    <div class="modal-dialog">
+                                                        <div class="modal-content">
+                                                            <form action="{{ route('tasks.complete', $task->id) }}" method="POST">
+                                                                @csrf
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title">Complete Task: {{ $task->title }}</h5>
+                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    <div class="mb-3">
+                                                                        <label class="form-label">Completion Notes</label>
+                                                                        <textarea class="form-control" name="completion_notes" rows="3" required></textarea>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                                    <button type="submit" class="btn btn-success">Mark as Completed</button>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </td>
                                         </tr>
@@ -179,22 +210,31 @@
         });
     </script>
 
-    <style>
-    .btn-sm {
-        padding: 0.25rem 0.5rem;
-        font-size: 0.875rem;
-        line-height: 1.5;
-        border-radius: 0.2rem;
+   <!-- Add this style section at the top of your file -->
+<style>
+    .action-buttons {
+        display: flex;
+        gap: 5px;
+        justify-content: flex-start;
+        align-items: center;
+        min-width: 120px;
     }
-    .gap-1 {
-        gap: 0.25rem !important;
+    
+    .action-btn {
+        padding: 4px 8px;
+        font-size: 14px;
+        line-height: 1;
     }
-    .pagination-wrapper .disabled {
-        pointer-events: none;
-        color: #6c757d;
-        border-color: #6c757d;
-        opacity: 0.65;
+
+    .table td {
+        vertical-align: middle;
+        padding: 12px 8px;
     }
-    </style>
+
+    .badge-completed {
+        padding: 6px 12px;
+        font-size: 14px;
+    }
+</style>
 </body>
 </html> 

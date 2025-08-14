@@ -19,6 +19,6 @@ class Role
             return $next($request);
         }
 
-        abort(403, 'Unauthorized action.');
+        abort(403, 'You do not have permission to access this resource.');
     }
 } 

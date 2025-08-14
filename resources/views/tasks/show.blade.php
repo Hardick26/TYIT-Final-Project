@@ -90,6 +90,15 @@
                     </div>
                 </div>
                 @endif
+
+                <form action="{{ route('tasks.complete', $task->id) }}" method="POST" class="mt-3">
+                    @csrf
+                    <div class="form-group">
+                        <label for="completion_notes">Completion Notes</label>
+                        <textarea name="completion_notes" id="completion_notes" class="form-control" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-success mt-2">Mark as Completed</button>
+                </form>
             </div>
         </div>
     </div>

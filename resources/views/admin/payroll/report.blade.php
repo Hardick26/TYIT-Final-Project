@@ -15,132 +15,118 @@
 @endsection
 
 @section('content')
-<section class="row">
-  <div class="col-12">
-    <div class="card flex-fill">
-      <div class="card-header">              
-        <h5 class="card-title mb-0">{{ __('Employees Daily Attendance') }}</h5>
-      </div>
-      <div class="card-body">
-        <form action="{{ route('generate.payroll') }}" method="POST">
-          @csrf
-          <div class="row g-3">
-            <div class="col-3">
-              {{-- <label for="year">Select Year:</label> --}}
-              <select name="year" class="form-select" id="year">
-                <option value="">{{ __('Choose Year') }}</option>
-                <option value="2023">{{ __('2023') }}</option>
-              </select>
+<div class="container-fluid p-0">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Payroll Sheet</h5>
+                </div>
+                <div class="card-body">
+                    <form action="{{ route('payroll.report') }}" method="GET">
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-3">
+                                <select name="year" class="form-select" id="year">
+                                    <option value="">{{ __('Choose Year') }}</option>
+                                    @for($year = date('Y'); $year >= 2020; $year--)
+                                        <option value="{{ $year }}" {{ (string)$selectedYear === (string)$year ? 'selected' : '' }}>
+                                            {{ $year }}
+                                        </option>
+                                    @endfor
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <select name="month" class="form-select" id="month">
+                                    <option value="">{{ __('Choose Month') }}</option>
+                                    @foreach(range(1, 12) as $month)
+                                        <option value="{{ $month }}" {{ (string)$selectedMonth === (string)$month ? 'selected' : '' }}>
+                                            {{ date('F', mktime(0, 0, 0, $month, 1)) }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <input type="text" id="searchInput" class="form-control" placeholder="Search employee...">
+                            </div>
+                            <div class="col-md-2">
+                                <button type="submit" name="view_report" value="1" class="btn btn-primary">View Report</button>
+                            </div>
+                        </div>
+                    </form>
+
+                    @if(isset($salaryData) && $salaryData->count() > 0)
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Employee Name</th>
+                                        <th>Designation</th>
+                                        <th>Basic</th>
+                                        <th>House Rent</th>
+                                        <th>Medical</th>
+                                        <th>Transport</th>
+                                        <th>Phone Bill</th>
+                                        <th>Internet Bill</th>
+                                        <th>Special</th>
+                                        <th>Bonus</th>
+                                        <th>Present Days</th>
+                                        <th>Absent Days</th>
+                                        <th>Gross Salary</th>
+                                        <th>Deductions</th>
+                                        <th>Net Salary</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($salaryData as $payroll)
+                                        <tr>
+                                            <td>{{ $payroll->employee->firstname }} {{ $payroll->employee->lastname }}</td>
+                                            <td>{{ $payroll->employee->designation->title }}</td>
+                                            <td>{{ number_format($payroll->basic, 2) }}</td>
+                                            <td>{{ number_format($payroll->house_rent, 2) }}</td>
+                                            <td>{{ number_format($payroll->medical, 2) }}</td>
+                                            <td>{{ number_format($payroll->transport, 2) }}</td>
+                                            <td>{{ number_format($payroll->phone_bill, 2) }}</td>
+                                            <td>{{ number_format($payroll->internet_bill, 2) }}</td>
+                                            <td>{{ number_format($payroll->special, 2) }}</td>
+                                            <td>{{ number_format($payroll->bonus, 2) }}</td>
+                                            <td>{{ $payroll->days_present }}</td>
+                                            <td>{{ $payroll->days_absent }}</td>
+                                            <td>{{ number_format($payroll->gross_salary, 2) }}</td>
+                                            <td>{{ number_format($payroll->deduction, 2) }}</td>
+                                            <td>{{ number_format($payroll->net_salary, 2) }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <div class="alert alert-info">
+                            Please select a year and month to view the payroll report.
+                        </div>
+                    @endif
+                </div>
             </div>
-            <div class="col-3">
-              {{-- <label for="month">Select Month:</label> --}}
-              <select name="month" class="form-select" id="month">
-                <option value="">{{ __('Choose Month') }}</option>
-                <option value="1">{{ __('January') }}</option>
-                <option value="2">{{ __('February') }}</option>
-                <option value="3">{{ __('March') }}</option>
-                <option value="4">{{ __('April') }}</option>
-                <option value="5">{{ __('May') }}</option>
-                <option value="6">{{ __('June') }}</option>
-                <option value="7">{{ __('July') }}</option>
-                <option value="8">{{ __('August') }}</option>
-                <option value="9">{{ __('September') }}</option>
-                <option value="10">{{ __('October') }}</option>
-                <option value="11">{{ __('November') }}</option>
-                <option value="12">{{ __('December') }}</option>
-              </select>
-            </div>
-            <div class="col-6">
-              <button type="submit" class="btn btn-primary">{{ __('Generate') }}</button>
-            </div>
-          </div>
-      </form>
-      </div>
-      <div class="table-responsive">
-        @isset($selectedYear, $selectedMonth)
-          <h2>Salary Sheet for {{ $selectedMonth }}/{{ $selectedYear }}</h2>
-          <table class="table table-hover my-0 table-bordered">
-            <thead>
-              <tr>
-                <th scope="col" width="200px">{{ __('Employee Name') }}</th>
-                <th scope="col">{{ __('Employee Position') }}</th>
-                <th scope="col">Basic Salary</th>
-                <th scope="col">House rent</th>
-                <th scope="col">Medical Allowance</th>
-                <th scope="col">Transport Allowance</th>
-                <th scope="col">special Allowance</th>
-                <th scope="col">Bonus</th>
-                <th scope="col">Present</th>
-                <th scope="col">Absent</th>
-                <th scope="col">Gross Salary</th>
-                {{-- <th scope="col">Overtime</th> --}}
-                <th scope="col">Provident Fund</th>
-                <th scope="col">Advanced</th>
-                <th scope="col">Tax</th>
-                <th scope="col">Life insurance </th>
-                <th scope="col">Health insurance</th>
-                <th scope="col">Deduction</th>
-                <th scope="col">Net Salary</th>
-              </tr>
-            </thead>
-                <tbody>
-                  @foreach ($salaryData as $data)
-                  <tr>
-                      <td>{{ $data->employee->firstname }}</td>
-                      <td>{{ $data->basic }}</td>
-                      <td>{{ $data->house_rent }}</td>
-                      <td>{{ $data->medical }}</td>
-                      <!-- Add more fields as needed -->
-                  </tr>
-              @endforeach
-                </tbody>
-          </table>
-        @endisset
-      </div>
-      
+        </div>
     </div>
-  </div>
-    
-</section>
+</div>
 @endsection
 
-@section('script')
+@push('scripts')
 <script>
-  $(document).ready(function() {
-      $(".employee").each(function() {
-          var $employee = $(this);
-          var basic = parseFloat($employee.find(".basic").val());
-          var rent = parseFloat($employee.find(".rent").val());
-          var medical = parseFloat($employee.find(".medical").val());
-          var transport = parseFloat($employee.find(".transport").val());
-          var special = parseFloat($employee.find(".special").val());
-          var bonus = parseFloat($employee.find(".bonus").val());
-          // var present = $employee.find(".present").val();
-          
-          // if (present == 25 ) {
-          //   bonus.val() + 500;
-          // }
+$(document).ready(function() {
+    $('#year, #month').on('change', function() {
+        if($('#year').val() && $('#month').val()) {
+            $(this).closest('form').submit();
+        }
+    });
 
-          var pf = parseFloat($employee.find(".pf").val());
-          var advance = parseFloat($employee.find(".advance").val());
-          var tax = parseFloat($employee.find(".tax").val());
-          var life = parseFloat($employee.find(".life").val());
-          var health = parseFloat($employee.find(".health").val());
-          var absent = $employee.find(".absent").val();
-
-          // if (absent > 0) {
-          //   (basic.val() / 30) * absent;
-          // }
-
-          var grossSalary = basic + rent + medical + transport + special + bonus;
-          var deductSalary = pf + advance + tax + life + health;
-          var netSalary = grossSalary - deductSalary;
-          
-          $employee.find(".gross").val(grossSalary.toFixed(2));
-          $employee.find(".deduct").val(deductSalary.toFixed(2));
-          $employee.find(".net").val(netSalary.toFixed(2));
-
-      });
-  });
+    // Add search functionality
+    $("#searchInput").on("keyup", function() {
+        var value = $(this).val().toLowerCase();
+        $("table tbody tr").filter(function() {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
+    });
+});
 </script>
-@endsection
+@endpush

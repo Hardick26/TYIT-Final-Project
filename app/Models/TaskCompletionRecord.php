@@ -21,12 +21,12 @@ class TaskCompletionRecord extends Model
         'completed_at' => 'datetime'
     ];
 
-    public function task(): BelongsTo
+    public function task()
     {
         return $this->belongsTo(Task::class);
     }
 
-    public function completedBy(): BelongsTo
+    public function completedBy()
     {
         return $this->belongsTo(User::class, 'completed_by');
     }

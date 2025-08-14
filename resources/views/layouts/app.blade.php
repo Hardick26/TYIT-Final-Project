@@ -13,6 +13,32 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        
+        <!-- DataTables -->
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap4.min.css">
+        
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+        <!-- Custom CSS -->
+        <link href="{{ asset('css/custom.css') }}" rel="stylesheet">
+
+        <style>
+            .badge-success {
+                background-color: #28a745;
+                color: white;
+            }
+
+            .badge-warning {
+                background-color: #ffc107;
+                color: black;
+            }
+
+            .badge-secondary {
+                background-color: #6c757d;
+                color: white;
+            }
+        </style>
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100">
@@ -29,8 +55,15 @@
 
             <!-- Page Content -->
             <main>
-                {{ $slot }}
+                @yield('content')
             </main>
         </div>
+
+        <!-- Scripts -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+        <script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap4.min.js"></script>
+        
+        @stack('scripts')
     </body>
 </html>

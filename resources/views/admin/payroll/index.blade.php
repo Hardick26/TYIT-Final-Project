@@ -19,7 +19,10 @@
     <div class="col-12">
       <div class="card flex-fill">
         <div class="card-header">              
-          <h5 class="card-title mb-0">{{ __('Payroll of the month August') }}</h5>
+          <h5 class="card-title mb-0">
+            {{ __('Payroll of the month ') }} 
+            {{ date('F Y') }}
+          </h5>
         </div>
         <div class="table-responsive">
           <table class="table table-hover my-0 table-bordered table-sm">
@@ -50,9 +53,9 @@
             </thead>
       
             <tbody>    
-              <form action="{{ Auth::user()->role->slug === 'super-admin' ? route('calculate.payroll') : (Auth::user()->role->slug === 'administrator' ? route('admin.calculate.payroll') : route('manager.calculate.payroll') ) }}" method="post">   
-                <button type="submit" class="btn btn-success" style="display: flex; margin:10px">submit</button>
+              <form action="{{ route('calculate.payroll') }}" method="POST">   
                 @csrf
+                <button type="submit" class="btn btn-success" style="display: flex; margin:10px">Submit</button>
                 @foreach ($employees as $employee)
                   <input type="hidden" name="employee_id" value="{{ $employee->id }}">
                   @php

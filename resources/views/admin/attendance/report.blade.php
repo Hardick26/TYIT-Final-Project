@@ -1,129 +1,124 @@
 @extends('layouts.admin')
 
 @section('title')
-  {{ __('Attendance Report') }}
+    {{ __('Attendance Report') }}
 @endsection
 
 @section('header')
-  <h1 class="h3 mb-3">{{ __('Attendance Report') }}</h1>
+  <div class="d-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3">{{ __('Attendance Report') }}</h1>
+  </div>
 @endsection
 
 @section('content')
-  <section class="row">
-    <div class="col-12">
-      <div class="card flex-fill">
-        <div class="card-header">
-          <h5 class="card-title mb-0">{{ __('Monthly Attendance Report of August') }}</h5>
-        </div>
-        <div class="card-body">
-          <div class="mb-4">
-            {{-- <input type="date" name="start_date" id="" />
-            <input type="date" name="end_date" id="" /> --}}
-          </div>
-          <div class="mt-5 table-responsive">
-            <table class="table table-bordered table-striped data-table">
-              <thead>
-                <tr>
-                  <th>{{ __('Employee Name') }}</th>
-                  <th>{{ __('Employee Position') }}</th>
-                  <th>{{ __('Employee ID') }}</th>
-                  @php 
-                    $today = today();
-                    $dates = [];
-                    for ($i = 1; $i < $today->daysInMonth + 1; ++$i) {
-                      // $dates[] = \Carbon\Carbon::createFromDate($today->year, $today->month, $i)->format('Y-m-d');
+<section class="row">
+  <div class="col-12">
+    <div class="card flex-fill">
+      <div class="card-header">              
+        <h5 class="card-title mb-0">{{ __('Monthly Attendance Report - ') }} {{ now()->format('F Y') }}</h5>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover table-bordered">
+          <thead class="table-light">
+            <tr>
+              <th scope="col" class="align-middle">Employee Name</th>
+              <th scope="col" class="align-middle">Position</th>
+              <th scope="col" class="align-middle">ID</th>
+              @php
+                  $today = now();
+                  $dates = [];
+                  for ($i = 1; $i <= $today->daysInMonth; ++$i) {
                       $dates[] = $i;
-                    }
+                  }
+              @endphp
+              @foreach ($dates as $date)
+                  @php
+                      $currentDate = \Carbon\Carbon::createFromDate($today->year, $today->month, $date);
+                      $dayName = $currentDate->format('D');
+                      $isSunday = $currentDate->isSunday();
                   @endphp
+                  <th scope="col" class="text-center align-middle {{ $isSunday ? 'bg-light' : '' }}" style="min-width: 80px;">
+                      {{ $date }}
+                      <div class="small {{ $isSunday ? 'text-danger' : 'text-muted' }}">{{ $dayName }}</div>
+                  </th>
+              @endforeach
+              <th scope="col" class="align-middle text-center">Present Days</th>
+              <th scope="col" class="align-middle text-center">Absent Days</th>
+            </tr>
+          </thead>
+          <tbody>
+            @foreach ($employees as $employee)
+              <tr>
+                <td class="align-middle">
+                  <strong>{{ $employee->firstname }} {{ $employee->lastname }}</strong>
+                </td>
+                <td class="align-middle">{{ $employee->designation->title }}</td>
+                <td class="align-middle">{{ $employee->id }}</td>
 
-                  @foreach ($dates as $date)
-                    <th>{{ $date }}</th>
-                  @endforeach
-                  <th>{{ __('Total Presents') }}t</th>
-                  <th>{{ __('Total Absents') }}</th>
-                </tr>
-              </thead>
-              <tbody>
                 @php
-                  $totalPresents = []; $totalAbsents = [];
+                    $presentCount = 0;
+                    $absentCount = 0;
                 @endphp
 
-                @foreach ($employees as $employee)
-                  <input type="hidden" name="employee_id" value="{{ $employee->id }}">
-                    <tr>
-                      <td>{{ $employee->firstname }} {{ $employee->lastname }}</td>
-                      <td>{{ $employee->designation->title }}</td>
-                      <td>{{ $employee->id }}</td>
-                      @for ($i = 1; $i < $today->daysInMonth + 1; ++$i)
-                        @php
-                          $date_picker = \Carbon\Carbon::createFromDate($today->year, $today->month, $i)->format('Y-m-d');
-                          $check_attd = \App\Models\Attendance::query()
-                                        ->where('employee_id', $employee->id)
-                                        ->where('attendance_date', $date_picker)
-                                        ->first();
-                                
-                          $check_depart = \App\Models\Depart::query()
-                                        ->where('employee_id', $employee->id)
-                                        ->where('depart_date', $date_picker)
-                                        ->first();
-                        @endphp
-                        <td>
-                          <div class="form-check form-check-inline ">
-                            {{-- @if (isset($check_attd)) --}}
-                              @if (isset($check_attd) && $check_attd->status==1)
-                                <i class="fa fa-check text-success present"></i>
-                                @elseif(isset($check_attd) && $check_attd->status==NULL)
-                                <i class="far fa-circle text-secondary"></i>
-                                @else
-                                <i class="fas fa-times text-danger"></i>
-                              @endif       
-                            {{-- @else --}}
-                              {{-- <i class="far fa-circle text-secondary"></i> --}}
-                            {{-- @endif --}}
-                            {{-- @if (isset($check_attd))
-                              @if ($check_attd->status==1)
-                                <i class="fa fa-check text-success present"></i>
-                                @elseif($check_attd->status==0)
-                                <i class="fas fa-times text-danger"></i>
-                              @else
-                                <i class="far fa-circle text-secondary"></i>
-                              @endif       
-                            @else
-                              <i class="far fa-circle text-secondary"></i>
-                            @endif --}}
-                          </div>
-                          <div class="form-check form-check-inline">
-                            @if (isset($check_depart))
-                              @if ($check_depart->status==1)
-                                <i class="fa fa-check text-success present"></i>
-                              @else
-                                <i class="fa fa-check text-danger"></i>
-                              @endif    
-                            @else
-                              <i class="fas fa-times text-danger"></i>
-                            @endif
-                          </div>
-                        </td>
-                      @endfor
-                      <td>
-                        {{ $present = App\Models\Attendance::where('employee_id', $employee->id)->where('status', 1)->count() }}
-                        @if ($present > 0)
-                          @php
-                            $totalPresents[$employee->id] = $present;
-                          @endphp
-                        @endif
-                      </td>
-                      <td>{{ $absent = $today->daysInMonth - $present }}</td>
-                    </tr>
-                @endforeach
-              </tbody>
-            </table>
-          </div>
-        </div>
+                @for ($i = 1; $i <= $today->daysInMonth; ++$i)
+                  @php
+                      $date_picker = \Carbon\Carbon::createFromDate($today->year, $today->month, $i)->format('Y-m-d');
+                      $isSunday = \Carbon\Carbon::createFromDate($today->year, $today->month, $i)->isSunday();
+                      
+                      $attendance = \App\Models\Attendance::query()
+                          ->where('employee_id', $employee->id)
+                          ->where('attendance_date', $date_picker)
+                          ->first();
+                      
+                      $depart = \App\Models\Depart::query()
+                          ->where('employee_id', $employee->id)
+                          ->where('depart_date', $date_picker)
+                          ->first();
+
+                      if ($attendance && !$isSunday) $presentCount++;
+                      if ($depart && !$isSunday) $absentCount++;
+                  @endphp
+                  <td class="text-center @if ($isSunday) bg-light @endif">
+                    @if ($isSunday)
+                      <span class="text-danger">Holiday</span>
+                    @else
+                      @if ($attendance)
+                        <i class="fas fa-check text-success"></i>
+                      @elseif ($depart)
+                        <i class="fas fa-times text-danger"></i>
+                      @else
+                        -
+                      @endif
+                    @endif
+                  </td>
+                @endfor
+                <td class="align-middle text-center">
+                  <span class="badge bg-success">{{ $presentCount }}</span>
+                </td>
+                <td class="align-middle text-center">
+                  <span class="badge bg-danger">{{ $absentCount }}</span>
+                </td>
+              </tr>
+            @endforeach
+          </tbody>
+        </table>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 @endsection
 
-@section('script')
-@endsection
+@push('styles')
+<style>
+th {
+    white-space: nowrap;
+}
+.text-danger {
+    color: #dc3545 !important;
+}
+.badge {
+    font-size: 14px;
+    padding: 5px 10px;
+}
+</style>
+@endpush

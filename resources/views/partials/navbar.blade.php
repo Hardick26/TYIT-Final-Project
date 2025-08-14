@@ -6,7 +6,7 @@
   <ul class="navbar-nav navbar-align">
     <li class="nav-item dropdown">
       <a class="nav-icon nav-link dropdown-toggle" href="javascript:void(0)" id="itemsDropdown" data-bs-toggle="dropdown">
-        <i class="align-middle" data-feather="plus"></i>
+        <i class="fas fa-plus align-middle"></i>
         <span class="align-middle" style="font-size: 0.85rem;">New Items</span>
       </a>
       <div class="dropdown-menu py-0" aria-labelledby="itemsDropdown">
@@ -48,66 +48,41 @@
   <div class="navbar-collapse collapse">
     <ul class="navbar-nav navbar-align">
       <li class="nav-item dropdown">
-        <a class="nav-icon dropdown-toggle" href="#" id="alertsDropdown" data-bs-toggle="dropdown">
-          <div class="position-relative">
-            <i class="align-middle" data-feather="bell"></i>
-            <span class="indicator">4</span>
-          </div>
+        <a class="nav-link dropdown-toggle position-relative" href="#" id="notificationsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="fas fa-bell"></i>
+          @if(auth()->user()->unreadNotifications->count() > 0)
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+              {{ auth()->user()->unreadNotifications->count() }}
+              <span class="visually-hidden">unread notifications</span>
+            </span>
+          @endif
         </a>
-        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end py-0" aria-labelledby="alertsDropdown">
-          <div class="dropdown-menu-header">2 New Notifications</div>
-          <div class="list-group">
-            <a href="#" class="list-group-item">
-              <div class="row g-0 align-items-center">
-                <div class="col-2">
-                  <i class="text-danger" data-feather="alert-circle"></i>
-                </div>
-                <div class="col-10">
-                  <div class="text-dark">Update completed</div>
-                  <div class="text-muted small mt-1">Restart server 12 to complete the update.</div>
-                  <div class="text-muted small mt-1">30m ago</div>
-                </div>
-              </div>
-            </a>
-            <a href="#" class="list-group-item">
-              <div class="row g-0 align-items-center">
-                <div class="col-2">
-                  <i class="text-warning" data-feather="bell"></i>
-                </div>
-                <div class="col-10">
-                  <div class="text-dark">Lorem ipsum</div>
-                  <div class="text-muted small mt-1">Aliquam ex eros, imperdiet vulputate hendrerit et.</div>
-                  <div class="text-muted small mt-1">2h ago</div>
-                </div>
-              </div>
-            </a>
-            <a href="#" class="list-group-item">
-              <div class="row g-0 align-items-center">
-                <div class="col-2">
-                  <i class="text-primary" data-feather="home"></i>
-                </div>
-                <div class="col-10">
-                  <div class="text-dark">Login from 192.186.1.8</div>
-                  <div class="text-muted small mt-1">5h ago</div>
-                </div>
-              </div>
-            </a>
-            <a href="#" class="list-group-item">
-              <div class="row g-0 align-items-center">
-                <div class="col-2">
-                  <i class="text-success" data-feather="user-plus"></i>
-                </div>
-                <div class="col-10">
-                  <div class="text-dark">New connection</div>
-                  <div class="text-muted small mt-1">Christina accepted your request.</div>
-                  <div class="text-muted small mt-1">14h ago</div>
-                </div>
-              </div>
-            </a>
+        <div class="dropdown-menu dropdown-menu-end py-0" aria-labelledby="notificationsDropdown">
+          <div class="dropdown-header bg-light py-2">
+            <strong>Notifications</strong>
           </div>
-          <div class="dropdown-menu-footer">
-            <a href="#" class="text-muted">Show all notifications</a>
+          <div class="list-group list-group-flush" style="max-height: 300px; overflow-y: auto;">
+            @forelse(auth()->user()->unreadNotifications as $notification)
+              <div class="list-group-item list-group-item-action">
+                <div class="d-flex w-100 justify-content-between">
+                  <small class="text-muted">{{ $notification->created_at->diffForHumans() }}</small>
+                </div>
+                <p class="mb-1">{{ $notification->data['message'] }}</p>
+              </div>
+            @empty
+              <div class="list-group-item">No new notifications</div>
+            @endforelse
           </div>
+          @if(auth()->user()->unreadNotifications->count() > 0)
+            <div class="dropdown-header border-top bg-light py-2">
+              <form action="{{ route('notifications.markAllAsRead') }}" method="POST" class="d-inline">
+                @csrf
+                <button type="submit" class="btn btn-link text-decoration-none p-0">
+                  Mark all as read
+                </button>
+              </form>
+            </div>
+          @endif
         </div>
       </li>
       <li class="nav-item dropdown">
@@ -189,7 +164,6 @@
           <a class="dropdown-item" href="javascript:void(0)"><i class="align-middle me-1" data-feather="settings"></i> Settings & Privacy</a>
           <a class="dropdown-item" href="javascript:void(0)"><i class="align-middle me-1" data-feather="help-circle"></i> Help Center</a>
           <div class="dropdown-divider"></div>
-          {{-- <a class="dropdown-item" href="javascript:void(0)">Log out</a> --}}
           <!-- Authentication -->
           <form method="POST" action="{{ route('logout') }}">
             @csrf

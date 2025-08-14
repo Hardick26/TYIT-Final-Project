@@ -12,9 +12,9 @@
   <section class="row">
     <div class="col-12 d-flex align-items-center justify-content-center">
       <div class="col-6">
-        <form action="{{ route('admin.users.update', $user->id) }}" method="post">
+        <form action="{{ route('admin.users.update', $user->id) }}" method="POST">
           @csrf
-          @method('put')
+          @method('PUT')
           <div class="card flex-fill">
             <div class="card-header">
               <h5 class="card-title mb-0">{{ __('Update user') }}</h5>
@@ -50,17 +50,11 @@
             </div>
             <div class="card-footer">
               <div class="row">
-                <div class="col-6 d-grid">
-                  <a href="{{ Auth::user()->role->slug === 'super-admin' ? route('user.index', $user->id) : route('admin.users.index', $user->id)}}" class="btn btn-outline-secondary" >
-                    <i class="align-middle me-1" data-feather="arrow-left"></i>
-                    <span class="ps-1">{{ __('Discard') }}</span>
-                  </a>
+                <div class="col-6">
+                  <a href="{{ route('admin.users.index') }}" class="btn btn-secondary">{{ __('Back') }}</a>
                 </div>
-                <div class="col-6 d-grid">
-                  <button type="submit" class="btn btn-outline-secondary" >
-                    <i class="align-middle me-1" data-feather="check"></i>
-                    <span class="ps-1">{{ __('Update') }}</span>
-                  </button>
+                <div class="col-6 text-end">
+                  <button type="submit" class="btn btn-primary">{{ __('Update') }}</button>
                 </div>
               </div>
             </div>

@@ -45,4 +45,19 @@ class User extends Authenticatable
     public function role(): BelongsTo {
         return $this->belongsTo(Role::class);
     }
+
+    public function assignedTasks()
+    {
+        return $this->hasMany(Task::class, 'assigned_to');
+    }
+
+    public function createdTasks()
+    {
+        return $this->hasMany(Task::class, 'assigned_by');
+    }
+
+    public function completedTasks()
+    {
+        return $this->hasMany(TaskCompletionRecord::class, 'completed_by');
+    }
 }

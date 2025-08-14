@@ -26,7 +26,7 @@ class DatabaseSeeder extends Seeder
             DesignationSeeder::class,
             ScheduleSeeder::class,
             EmployeeSeeder::class,
-            // TaskSeeder::class,
+            TaskSeeder::class,
         ]);
     }
 }

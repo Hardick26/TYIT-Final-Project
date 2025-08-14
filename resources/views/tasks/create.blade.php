@@ -1,77 +1,85 @@
-@extends('layouts.app')
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>EPTS - Create Task</title>
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/light.css') }}" rel="stylesheet">
+</head>
+<body>
+    <div class="wrapper">
+        @include('partials.sidebar')
 
-@section('content')
-<div class="container">
-    <div class="row mb-3">
-        <div class="col-md-12">
-            <h2>Create New Task</h2>
+        <div class="main">
+            @include('partials.navbar')
+
+            <main class="content">
+                <div class="container-fluid p-0">
+                    <div class="mb-3">
+                        <h1 class="h3 d-inline align-middle">Create New Task</h1>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <form action="{{ route('tasks.store') }}" method="POST">
+                                        @csrf
+                                        <div class="row">
+                                            <div class="col-12 col-md-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Title</label>
+                                                    <input type="text" class="form-control" name="title" required>
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label class="form-label">Description</label>
+                                                    <textarea class="form-control" name="description" rows="3"></textarea>
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label class="form-label">Assign To</label>
+                                                    <select class="form-select" name="assigned_to" required>
+                                                        <option value="">Select User</option>
+                                                        @foreach($users as $user)
+                                                            <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label class="form-label">Status</label>
+                                                    <select class="form-select" name="status" required>
+                                                        <option value="pending">Pending</option>
+                                                        <option value="in_progress">In Progress</option>
+                                                        <option value="completed">Completed</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label class="form-label">Due Date</label>
+                                                    <input type="date" class="form-control" name="due_date" required>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="mt-3">
+                                            <button type="submit" class="btn btn-primary">Create Task</button>
+                                            <a href="{{ route('tasks.index') }}" class="btn btn-secondary">Cancel</a>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            @include('partials.footer')
         </div>
     </div>
 
-    <div class="card">
-        <div class="card-body">
-            <form action="{{ route('tasks.store') }}" method="POST">
-                @csrf
-                <div class="form-group">
-                    <label for="title">Title</label>
-                    <input type="text" class="form-control @error('title') is-invalid @enderror" 
-                           id="title" name="title" value="{{ old('title') }}">
-                    @error('title')
-                        <span class="invalid-feedback">{{ $message }}</span>
-                    @enderror
-                </div>
-
-                <div class="form-group">
-                    <label for="description">Description</label>
-                    <textarea class="form-control @error('description') is-invalid @enderror" 
-                              id="description" name="description" rows="3">{{ old('description') }}</textarea>
-                    @error('description')
-                        <span class="invalid-feedback">{{ $message }}</span>
-                    @enderror
-                </div>
-
-                <div class="form-group">
-                    <label for="assigned_to">Assign To</label>
-                    <select class="form-control @error('assigned_to') is-invalid @enderror" 
-                            id="assigned_to" name="assigned_to">
-                        <option value="">Select User</option>
-                        @foreach($users as $user)
-                            <option value="{{ $user->id }}" {{ old('assigned_to') == $user->id ? 'selected' : '' }}>
-                                {{ $user->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                    @error('assigned_to')
-                        <span class="invalid-feedback">{{ $message }}</span>
-                    @enderror
-                </div>
-
-                <div class="form-group">
-                    <label for="status">Status</label>
-                    <select class="form-control @error('status') is-invalid @enderror" 
-                            id="status" name="status">
-                        <option value="pending" {{ old('status') == 'pending' ? 'selected' : '' }}>Pending</option>
-                        <option value="in_progress" {{ old('status') == 'in_progress' ? 'selected' : '' }}>In Progress</option>
-                        <option value="completed" {{ old('status') == 'completed' ? 'selected' : '' }}>Completed</option>
-                    </select>
-                    @error('status')
-                        <span class="invalid-feedback">{{ $message }}</span>
-                    @enderror
-                </div>
-
-                <div class="form-group">
-                    <label for="due_date">Due Date</label>
-                    <input type="date" class="form-control @error('due_date') is-invalid @enderror" 
-                           id="due_date" name="due_date" value="{{ old('due_date') }}">
-                    @error('due_date')
-                        <span class="invalid-feedback">{{ $message }}</span>
-                    @enderror
-                </div>
-
-                <button type="submit" class="btn btn-primary">Create Task</button>
-                <a href="{{ route('tasks.index') }}" class="btn btn-secondary">Cancel</a>
-            </form>
-        </div>
-    </div>
-</div>
-@endsection 
+    <script src="{{ asset('js/app.js') }}"></script>
+</body>
+</html> 

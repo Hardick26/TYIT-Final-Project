@@ -9,20 +9,22 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\DatabaseMessage;
 use App\Models\Task;
 
-class TaskCompletedNotification extends Notification
+class TaskCompletedNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
     protected $task;
     protected $completedBy;
+    protected $completionNotes;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct(Task $task, $completedBy)
+    public function __construct(Task $task, $completedBy, $completionNotes)
     {
         $this->task = $task;
         $this->completedBy = $completedBy;
+        $this->completionNotes = $completionNotes;
     }
 
     /**
@@ -30,7 +32,7 @@ class TaskCompletedNotification extends Notification
      *
      * @return array<int, string>
      */
-    public function via(object $notifiable): array
+    public function via($notifiable): array
     {
         return ['database'];
     }
@@ -51,14 +53,15 @@ class TaskCompletedNotification extends Notification
      *
      * @return array<string, mixed>
      */
-    public function toDatabase(object $notifiable): array
+    public function toDatabase($notifiable): array
     {
         return [
             'task_id' => $this->task->id,
             'task_title' => $this->task->title,
             'completed_by' => $this->completedBy->name,
-            'completed_at' => now(),
-            'message' => "Task '{$this->task->title}' was completed by {$this->completedBy->name}"
+            'completion_notes' => $this->completionNotes,
+            'completed_at' => now()->format('Y-m-d H:i:s'),
+            'message' => "Task '{$this->task->title}' has been completed by {$this->completedBy->name}"
         ];
     }
 }

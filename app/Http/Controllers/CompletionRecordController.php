@@ -13,11 +13,23 @@ class CompletionRecordController extends Controller
                     ->latest('completed_at')
                     ->paginate(10);
 
-        return view('completion-records.index', compact('records'));
+        return view('tasks.completion-records', compact('records'));
     }
 
     public function show(TaskCompletionRecord $record)
     {
-        return view('completion-records.show', compact('record'));
+        return view('tasks.completion-records-show', compact('record'));
+    }
+
+    public function destroy(TaskCompletionRecord $record)
+    {
+        try {
+            $record->delete();
+            return redirect()->route('completion-records.index')
+                ->with('success', 'Record deleted successfully');
+        } catch (\Exception $e) {
+            return redirect()->route('completion-records.index')
+                ->with('error', 'Error deleting record: ' . $e->getMessage());
+        }
     }
 } 

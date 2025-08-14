@@ -51,13 +51,7 @@
                   <option value="7">Marriage Leave</option>
                 </select>
               </div>
-              <div class="col-6">
-                <label for="status">Leave Type</label>
-                <select name="status" id="status" class="form-control" required>
-                  <option value="1">Apprived</option>
-                  <option value="0">Rejected</option>
-                </select>
-              </div>
+              
               <div>
                 <label for="leave_reason">Leave Reason</label>
                 <textarea name="leave_reason" class="form-control" id=""></textarea>

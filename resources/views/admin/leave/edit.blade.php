@@ -56,7 +56,7 @@
               <div class="col-6">
                 <label for="status">Leave Type</label>
                 <select name="status" id="status" class="form-control" required>
-                  <option value="1" {{$leave->status === 1 ? 'selected' : '' }} >Apprived</option>
+                  <option value="1" {{$leave->status === 1 ? 'selected' : '' }} >Approved</option>
                   <option value="0" {{$leave->status === 2 ? 'selected' : '' }} >Rejected</option>
                 </select>
               </div>

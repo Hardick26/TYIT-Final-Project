@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Role;
 use App\Models\User;
+use App\Models\Task;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -85,8 +87,37 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        //
-        $user->delete();
-        return back()->with('success', 'User deleted successfully');
+        try {
+            // Begin transaction
+            DB::beginTransaction();
+
+            // First, reassign or delete related tasks
+            $tasks = Task::where('assigned_by', $user->id)
+                        ->orWhere('assigned_to', $user->id)
+                        ->get();
+
+            foreach ($tasks as $task) {
+                // You can either:
+                // 1. Delete the tasks
+                $task->delete();
+                // OR
+                // 2. Reassign them to another user (e.g., super admin)
+                // $task->update([
+                //     'assigned_by' => 1, // super admin id
+                //     'assigned_to' => 1  // super admin id
+                // ]);
+            }
+
+            // Then delete the user
+            $user->delete();
+
+            DB::commit();
+            return back()->with('success', 'User and related tasks deleted successfully');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Cannot delete user. They have assigned tasks.');
+        }
+        
     }
 }
